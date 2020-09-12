@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Авторизация</title>
+    <link rel="stylesheet" href="../global.css">
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+<body>
+<div id="app" class="row mx-0">
+    <div class="col d-none d-lg-block"></div>
+    <div class="col-lg-6 align-self-center">
+        <transition-group name="tg" tag="form" class="mx-auto tg" style="max-width: 450px;">
+
+            <div key="header" v-if="loaded" class="mb-2">
+                <div class="logo mb-1">
+                    <img src="../logo.png" alt="Logo" width="150px">
+                </div>
+                <h1 class="welcome">Добро пожаловать на сервер</h1>
+                <div class="row" style="display: inline-flex;">
+                    <div class="vertical-line align-self-center mx-3"></div>
+                    <h1 class="name--all"><span class="name--first-letter">E</span>ternity <span
+                            class="name--first-letter">R</span>ole <span class="name--first-letter">P</span>lay</h1>
+                    <div class="vertical-line align-self-center mx-3"></div>
+                </div>
+            </div>
+            <template v-if="loaded">
+
+                <div v-if="page === 'blocked'" key="pban" class="blocked px-2 mt-4">
+                    <p class="white--text">Ваш аккаунт заблокирован</p>
+                </div>
+
+                <template v-if="page === 'login'">
+                    <v-input
+                            v-model.trim="form.login.username"
+                            icon="icon-user.png"
+                            :progress-line="24"
+                            placeholder="Логин"
+                            key="lu"
+                            :disabled="!!socialName || form.login.loading"
+                            @change="(banned = null, form.login.warning = null)"></v-input>
+                    <v-input
+                            v-model.trim="form.login.password"
+                            type="password"
+                            :disabled="form.login.loading"
+                            icon="icon-password.png"
+                            :progress-line="12"
+                            @change="form.login.warning = null"
+                            placeholder="Пароль"
+                            key="lp"></v-input>
+                    <div v-if="form.login.warning" key="lw" class="mt-4 white--text">{{ form.login.warning }}</div>
+                    <div v-if="form.login.banned" key="lban" class="banned px-2 mt-4">
+                        <p>Не удалось войти так как ваш аккаунт заблокирован</p>
+                        <p><span class="white--text">Причина:</span> {{ form.login.banned.reason }}</p>
+                        <p><span class="white--text">Срок:</span> {{ form.login.banned.period }}</p>
+                    </div>
+                    <div class="row mt-4 px-1 mx-0" key="lb">
+                        <div class="col">
+                            <button class="btn" @click.prevent="login" :disabled="form.login.loading">Войти
+                            </button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-2" @click.prevent="page = 'registration'"
+                                    :disabled="form.login.loading">Регистрация
+                            </button>
+                        </div>
+                    </div>
+                    <p key="lfb"><span class="btn-text" @click="page = 'forgot-1'" :disabled="form.login.loading">Забыл пароль?</span>
+                    </p>
+                </template>
+
+                <template v-if="page === 'registration'">
+                    <v-input
+                            v-model.trim="form.registration.username"
+                            icon="icon-user.png"
+                            :progress-line="24"
+                            placeholder="Логин"
+                            key="ru"
+                            :disabled="!!socialName || form.registration.loading"
+                            @change="this.form.registration.warning = null"></v-input>
+                    <v-input
+                            v-model.trim="form.registration.email"
+                            type="email"
+                            :disabled="form.registration.loading"
+                            icon="icon-email.png"
+                            :progress-line="30"
+                            @change="this.form.registration.warning = null"
+                            placeholder="E-mail"
+                            key="r1e"></v-input>
+                    <v-input
+                            v-model.trim="form.registration.password"
+                            type="password"
+                            :disabled="form.registration.loading"
+                            icon="icon-password.png"
+                            :progress-line="12"
+                            @change="this.form.registration.warning = null"
+                            placeholder="Пароль"
+                            key="rp"></v-input>
+                    <div v-if="form.registration.warning" class="mt-4 white--text" key="rw">{{ form.login.warning }}</div>
+                    <div class="row mt-4 px-1 mx-0" key="rb">
+                        <div class="col">
+                            <button class="btn" @click.prevent="registration"
+                                    :disabled="form.registration.loading">Регистрация
+                            </button>
+                        </div>
+                    </div>
+                    <p key="rfb"><span class="btn-text" @click="page = 'login'" :disabled="form.registration.loading">Авторизация</span>
+                </template>
+
+                <template v-if="page === 'forgot-1'">
+                    <p key="f1t" class="white--text mb-1">Пожалуйста, укажите <span
+                            class="gray--text">электронную почту</span>, которая была привязана к аккаунту</p>
+                    <v-input v-model.trim="form.forgot.email" icon="icon-email.png" :progress-line="30"
+                             placeholder="E-mail" key="f1e"></v-input>
+                    <div class="row mt-4 px-1" key="f1b">
+                        <div class="col-6 mx-auto">
+                            <button class="btn" @click.prevent="page = 'forgot-2'">Далее</button>
+                        </div>
+                    </div>
+                    <p key="f1fb"><span class="btn-text" @click="page = 'login'" :disabled="form.registration.loading">Авторизация</span>
+                </template>
+                <template v-if="page === 'forgot-2'">
+                    <p key="f2t" class="white--text mb-1">На указанную вами <span
+                            class="gray--text">электронную почту</span>, был отправлен <span class="gray--text">код подтверждения</span>
+                    </p>
+                    <v-input v-model.trim="form.forgot.code" icon="icon-key.png" :progress-line="6"
+                             placeholder="Код" key="f2c"></v-input>
+                    <div class="row mt-4 px-1" key="f2b">
+                        <div class="col-6 mx-auto">
+                            <button class="btn" @click.prevent="page = 'forgot-3'">Далее</button>
+                        </div>
+                    </div>
+                </template>
+
+                <template v-if="page === 'forgot-3'">
+                    <v-input v-model.trim="form.forgot.new_password" icon="icon-password.png" :progress-line="12"
+                             placeholder="Введите новый пароль" key="f3p" type="password"></v-input>
+                    <v-input v-model.trim="form.forgot.new_password2" icon="icon-password.png" :progress-line="12"
+                             placeholder="Повторите пароль" key="f3pp" type="password"></v-input>
+                    <p key="f3ps" v-if="false">Новый пароль совпадает со старым</p>
+                    <div class="row mt-3 px-1" key="f3b">
+                        <div class="col-6 mx-auto">
+                            <button class="btn" @click.prevent="page = 'login'">Готово</button>
+                        </div>
+                    </div>
+                </template>
+            </template>
+        </transition-group>
+    </div>
+</div>
+
+<script src="../vue.js"></script>
+<script src="../global.js"></script>
+<script>
+
+    const app = new Vue({
+        el     : '#app',
+        data() {
+            return {
+                loaded    : false,
+                page      : null,
+                form      : {
+                    login       : {
+                        username: '',
+                        password: '',
+                        warning : null, // Предупреждение
+                        loading : false,
+                        banned  : null
+                    },
+                    registration: {
+                        username: '',
+                        password: '',
+                        email   : '',
+                        loading : false,
+                        warning : null
+                    },
+                    forgot      : {
+                        email        : '',
+                        code         : '',
+                        new_password : '',
+                        new_password2: ''
+                    }
+                },
+                banned: null,
+                socialName: null
+            }
+        },
+        mounted() {
+            setTimeout(() => {
+                this.loaded = true;
+            }, 500);
+        },
+        methods: {
+            login() {
+                if (!this.form.login.username) return this.form.login.warning = 'Введите логин';
+                if (!this.form.login.password) return this.form.login.warning = 'Введите пароль';
+                this.form.login.loading = true
+                this.$sendToClient('Login', {
+                    SocialName: this.form.login.username,
+                    Password: this.form.login.password
+                })
+            },
+            registration() {
+                if (!this.form.registration.username) return this.form.registration.warning = 'Введите логин';
+                if (!this.form.registration.email) return this.form.registration.warning = 'Введите Email';
+                if (!this.form.registration.password) return this.form.registration.warning = 'Введите пароль';
+                this.form.registration.loading = true
+                this.$sendToClient('Registration', {
+                    SocialName   : this.form.registration.username,
+                    Password: this.form.registration.password,
+                    Email: this.form.registration.email
+                })
+            },
+            event(json) {
+                const {name, data} = this.$parseEvent(json);
+                switch (name) {
+                    case 'init': {
+                        this.socialName = data.socialName;
+                        switch (data.status) {
+                            case 0: {
+                                this.page = 'blocked'
+                                break;
+                            }
+                            case 1: {
+                                this.page = 'registration'
+                                break;
+                            }
+                            case 2: {
+                                this.page = 'login'
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                    case 'loginResult': {
+                        this.form.login.warning = data
+                        this.form.login.loading = false
+                        break;
+                    }
+                    case 'registerResult': {
+                        if(!data) this.form.registration.warning = 'Не получилось зарегистрировать запись'
+                        this.page = 'login'
+                        this.form.registration.loading = false
+                        break;
+                    }
+                }
+            }
+        },
+        watch: {
+            socialName(name) {
+                this.form.login.username = name;
+                this.form.registration.username = name;
+            }
+        }
+    });
+</script>
+</body>
+</html>

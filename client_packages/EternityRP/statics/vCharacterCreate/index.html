@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Создание персонажа</title>
+    <link rel="stylesheet" href="../global.css">
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+</head>
+<body>
+<div id="app" class="row mx-0 p-5">
+    <div class="col"></div>
+    <div class="col-auto interface d-flex flex-column">
+        <div class="tabs p-3">
+            <span class="tabs-item p-2" v-for="t in tabs" :class="{active: t === tab}" @click="tab = t">{{t}}</span>
+        </div>
+        <div class="row mx-0 h-100">
+            <div class="col-5 additional-menu px-5 py-4 align-self-baseline">
+                <button class="btn p-2 mb-3" @click="undo">Отменить действие</button>
+                <button class="btn p-2 mb-3" @click="undoAll">Отменить все</button>
+                <button class="btn p-2" @click="random">Рандом</button>
+                <div class="row rotation mt-5">
+                    <div class="col text-right">
+                        <button class="rotation-btn left" @click="rotate_left"></button>
+                    </div>
+                    <div class="col text-left">
+                        <button class="rotation-btn right" @click="rotate_right"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-7 menus p-0 d-flex flex-column">
+                <transition name="menu" mode="out-in">
+                    <div class="menu px-5 py-4" v-if="tab === 'Основные'" key="Основные">
+                        <p class="title mt-0 mb-2">Основное</p>
+                        <v-input v-model.lazy="data.main.name" icon="icons/i-user.png" placeholder="Имя"></v-input>
+                        <v-input v-model="data.main.surname" icon="icons/i-user.png" placeholder="Фамилия"></v-input>
+                        <div class="row">
+                            <div class="col-6 pr-1">
+                                <v-input-checkbox :value="data.main.sex === 'man'" @input="data.main.sex = 'man'"
+                                                  icon="icons/i-man.png">Мужской
+                                </v-input-checkbox>
+                            </div>
+                            <div class="col-6 pl-1">
+                                <v-input-checkbox :value="data.main.sex === 'woman'" @input="data.main.sex = 'woman'"
+                                                  icon="icons/i-woman.png">Женский
+                                </v-input-checkbox>
+                            </div>
+                        </div>
+                        <v-input v-model.number="data.main.age" v-mask="'##'" icon="icons/i-age.png" :progress-line="2"
+                                 placeholder="Возраст"></v-input>
+                        <v-select v-model="data.main.social" :values="socials" placeholder="Социальный статус"
+                                  icon="icons/i-social.png"></v-select>
+                        <v-input v-model="data.main.referral" icon="icons/i-referral.png"
+                                 placeholder="Реферал"></v-input>
+                        <p class="title mb-2">Генетика</p>
+                        <div class="row mb-3">
+                            <div class="col-6 pr-1" :class="mather_anim">
+                                <p class="genetic akrobat-light">Мама</p>
+                                <div class="genetic-photo">
+                                    <transition name="genetic" mode="out-in">
+                                        <img class="genetic-img" :src="mather.img" :key="mather.img">
+                                    </transition>
+                                </div>
+                                <div class="row no-gutters my-1">
+                                    <div class="col-auto px-1 genetic--arrow" @click="mather_prev">
+                                        <img src="icons/arrow-left.png" height="15" alt="<">
+                                    </div>
+                                    <transition name="genetic" mode="out-in">
+                                        <div class="col genetic-name" :key="mather.value">{{mather.name}}</div>
+                                    </transition>
+                                    <div class="col-auto px-1 genetic--arrow" @click="mather_next">
+                                        <img src="icons/arrow-right.png" height="15" alt=">">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 pl-1" :class="father_anim">
+                                <p class="genetic akrobat-light">Отец</p>
+                                <div class="genetic-photo">
+                                    <transition name="genetic" mode="out-in">
+                                        <img class="genetic-img" :src="father.img" :key="father.img">
+                                    </transition>
+                                </div>
+                                <div class="row no-gutters my-1">
+                                    <div class="col-auto px-1 genetic--arrow" @click="father_prev">
+                                        <img src="icons/arrow-left.png" height="15" alt="<">
+                                    </div>
+                                    <transition name="genetic" mode="out-in">
+                                        <div class="col genetic-name" :key="father.value">{{father.name}}</div>
+                                    </transition>
+                                    <div class="col-auto px-1 genetic--arrow" @click="father_next">
+                                        <img src="icons/arrow-right.png" height="15" alt=">">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row akrobat-light white--text">
+                            <div class="col-4">Сходство</div>
+                            <div class="col">
+                                <div class="row no-gutters">
+                                    <div class="col-auto px-1" style="height: 22px"><img src="icons/i-woman.png"
+                                                                                         class="mh-100 mw-100"></div>
+                                    <div class="col px-1">
+                                        <v-input-range v-model.number="data.genetic.similarity" min="0.0" step="0.1"
+                                                       max="1.0"></v-input-range>
+                                    </div>
+                                    <div class="col-auto  px-1" style="height: 22px"><img src="icons/i-man.png"
+                                                                                          class="mh-100 mw-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row akrobat-light white--text">
+                            <div class="col-4">Цвет кожы</div>
+                            <div class="col">
+                                <div class="row no-gutters">
+                                    <div class="col-auto px-1" style="height: 22px"><img src="icons/i-woman.png"
+                                                                                         class="mh-100 mw-100"></div>
+                                    <div class="col px-1">
+                                        <v-input-range v-model.number="data.genetic.color" min="0.0" step="0.1"
+                                                       max="1.0"></v-input-range>
+                                    </div>
+                                    <div class="col-auto  px-1" style="height: 22px"><img src="icons/i-man.png"
+                                                                                          class="mh-100 mw-100"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="menu px-5 py-4 akrobat-light white--text" v-if="tab === 'Черты лица'" key="Черты лица">
+                        <p class="title mt-0 mb-2 gagalin">Черты лица</p>
+                        <div class="row">
+                            <div class="col">Ширина носа</div>
+                            <div class="col">
+                                <v-input-range v-model.number="data.face.nose_width" min="-1.0" step="0.1"
+                                               max="1.0"></v-input-range>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">Высота носа</div>
+                            <div class="col">
+                                <v-input-range v-model.number="data.face.nose_height" min="-1.0" step="0.1"
+                                               max="1.0"></v-input-range>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">Длина кончика носа</div>
+                            <div class="col">
+                                <v-input-range v-model.number="data.face.tip_length" min="-1.0" step="0.1"
+                                               max="1.0"></v-input-range>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">Глубина моста носа</div>
+                            <div class="col">
+                                <v-input-range v-model.number="data.face.nose_bridge_depth" min="-1.0" step="0.1"
+                                               max="1.0"></v-input-range>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">Высота кончика носа</div>
+                            <div class="col">
+                                <v-input-range v-model.number="data.face.tip_height" min="-1.0" step="0.1"
+                                               max="1.0"></v-input-range>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">Поломаность носа</div>
+                            <div class="col">
+                                <v-input-range v-model.number="data.face.broken_nose" min="-1.0" step="0.1"
+                                               max="1.0"></v-input-range>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">Высота бровей</div>
+                            <div class="col">
+                                <v-input-range v-model.number="data.face.eyebrow_height" min="-1.0" step="0.1"
+                                               max="1.0"></v-input-range>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">Глубина бровей</div>
+                            <div class="col">
+                                <v-input-range v-model.number="data.face.eyebrow_depth" min="-1.0" step="0.1"
+                                               max="1.0"></v-input-range>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">Высота скул</div>
+                            <div class="col">
+                                <v-input-range v-model.number="data.face.cheekbones_height" min="-1.0" step="0.1"
+                                               max="1.0"></v-input-range>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+                <div class="buttons mt-auto p-2 d-flex justify-content-around">
+                    <button class="btn btn--done" @click="done">Готово</button>
+                    <button class="btn btn--exit" @click="exit">Выйти</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../vue.js"></script>
+<script src="../vue-the-mask.js"></script>
+<script src="../global.js"></script>
+<script>
+    Vue.use(VueTheMask);
+    const app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                tabs: [ // Список вкладок
+                    'Основные',
+                    'Черты лица',
+                    'Особенности кожы',
+                    'Волосы',
+                    'Одежда'
+                ],
+                tab: 'Основные', // Текущая вкладка
+                undoHistory: [], // История изменений
+                undoHistoryPause: false, // Флаг который указывает что не надо сохранять изменения 1 раз
+                undoDid: false, // Пользователь идет назад, убирает лишнию историю
+                data: {
+                    main: { // Данные персонажа
+                        name: '', // Имя
+                        surname: '', // Фамилия
+                        sex: null, // Стать
+                        age: '', // Возраст
+                        social: null, // Социальный статус
+                        referral: '', // Рефералка
+                    },
+                    genetic: this.default_genetic(), // Генетические характеристики
+                    face: this.default_face() // Характеристики лица
+                },
+                socials: [ // Список социальных статусов
+                    {
+                        text: 'Бомж',
+                        value: 'bomg'
+                    }
+                ],
+                mathers: [ // Список матерей
+                    {
+                        name: 'Misty',
+                        img: 'img/Misty.png',
+                        value: 'misty'
+                    },
+                    {
+                        name: 'Ethan',
+                        img: 'img/Ethan.png',
+                        value: 'ethan'
+                    }
+                ],
+                fathers: [ // Список отцов
+                    {
+                        name: 'Ethan',
+                        img: 'img/Ethan.png',
+                        value: 'ethan'
+                    },
+                    {
+                        name: 'Misty',
+                        img: 'img/Misty.png',
+                        value: 'misty'
+                    },
+                ],
+                mather_anim: null, // В какую сторону будет идти анимация при смене матери
+                father_anim: null,  // В какую сторону будет идти анимация при смене отца
+            }
+        },
+        computed: {
+            mather_index() {
+                return this.mathers.findIndex(r => r.value === this.data.genetic.mather)
+            },
+            father_index() {
+                return this.fathers.findIndex(r => r.value === this.data.genetic.father)
+            },
+            mather() {
+                return this.mathers[this.mather_index]
+            },
+            father() {
+                return this.fathers[this.father_index]
+            }
+        },
+        methods: {
+            default_genetic: () => ({
+                mather: 'misty', // Мать
+                father: 'ethan', // Отец
+                similarity: 0.5, // Сходство
+                color: 0.5 // Цвет кожы
+            }),
+            default_face: () => ({
+                nose_width: 0.0, // Ширина носа
+                nose_height: 0.0, // Высота носа
+                tip_length: 0.0, // Длина кончика носа
+                nose_bridge_depth: 0.0, // Глубина моста носа
+                tip_height: 0.0, // Высота кончика носа
+                broken_nose: 0.0, // Поломаность носа
+                eyebrow_height: 0.0, // Высота бровей
+                eyebrow_depth: 0.0, // Глубина бровей
+                cheekbones_height: 0.0, // Высота скул
+            }),
+            mather_next() { // Следующая мать
+                this.mather_anim = 'anim--left'
+                this.data.genetic.mather = (this.mathers[this.mather_index + 1] || this.mathers[0]).value
+            },
+            mather_prev() { // Предыдущая мать
+                this.mather_anim = 'anim--right'
+                this.data.genetic.mather = (this.mathers[this.mather_index - 1] || this.mathers[this.mathers.length - 1]).value
+            },
+            father_next() { // Следующий отец
+                this.father_anim = 'anim--left'
+                this.data.genetic.father = (this.fathers[this.father_index + 1] || this.fathers[0]).value
+            },
+            father_prev() { // Предыдущий отец
+                this.father_anim = 'anim--right'
+                this.data.genetic.father = (this.fathers[this.father_index - 1] || this.fathers[this.fathers.length - 1]).value
+            },
+            event(json) { // Обработка событий от клиента
+                const {name, data} = this.$parseEvent(json);
+                switch (name) {
+                    case 'init': {
+
+                    }
+                }
+            },
+            updateCharacter() { // Событие при изменение характеристик персонажа
+
+                const {face, genetic} = this.data
+
+                // this.$sendToClient('updateCharacter', {
+                //     face,
+                //     genetic
+                // })
+            },
+            historyPush() {
+                if (!this.undoHistoryPause) {
+                    const data = (() => {
+                        switch (this.tab) {
+                            case "Основные": {
+                                if(!this.undoHistory.length) this.undoHistory.push(this.default_genetic())
+                                return this.data.genetic
+                            }
+                            case "Черты лица":
+                                if(!this.undoHistory.length) this.undoHistory.push(this.default_face())
+                                return this.data.face
+                            default:
+                                return false
+                        }
+                    })()
+                    this.undoDid = false
+                    if (data) this.undoHistory.push(JSON.parse(JSON.stringify(data)));
+                } else this.undoHistoryPause = false
+            },
+            random() { // Нажата кнопка "Рандом"
+                switch (this.tab) { // Сбрасивыем данные в зависимости на какой странице находится пользователь
+                    case "Основные": {
+                        ['father', 'mather'].forEach(key => this.data.genetic[key] = this[`${key}s`][Math.floor(Math.random() * this[`${key}s`].length)].value);
+                        ['similarity', 'color'].forEach(key => this.data.genetic[key] = +this.$randomInt(0, 10) / 10);
+                        break
+                    }
+                    case "Черты лица": {
+                        Object.keys(this.data.face).forEach(key => this.data.face[key] = +this.$randomInt(-10, 10) / 10)
+                        break
+                    }
+                }
+            },
+            undo() { // Нажата кнопка "Отменить действие"
+                if (!this.undoHistory.length) return false;
+                this.undoHistoryPause = true
+                if(!this.undoDid) this.undoHistory.pop(); // Убирает лишнию историю в конце
+                this.undoDid = true
+                const data = this.undoHistory.pop();
+                switch (this.tab) {
+                    case "Основные": {
+                        this.data.genetic = data
+                        break
+                    }
+                    case "Черты лица": {
+                        this.data.face = data
+                        break
+                    }
+                    default:
+                        this.undoHistoryPause = false
+                }
+            },
+            undoAll() { // Нажата кнопка "Отменить все"
+                this.undoHistoryPause = true
+                this.undoHistory = []
+                switch (this.tab) { // Сбрасивыем данные в зависимости на какой странице находится пользователь
+                    case "Основные": {
+                        this.data.genetic = this.default_genetic() // Сброс генетики
+                        break
+                    }
+                    case "Черты лица": {
+                        this.data.face = this.default_face() // Сброс лица
+                        break
+                    }
+                    default:
+                        this.undoHistoryPause = false
+                }
+            },
+            done() { // Нажата кнопка "Готово"
+
+            },
+            exit() { // Нажата кнопка "Выйти"
+
+            },
+            rotate_left() { // Нажата кнопка поворота налево
+
+            },
+            rotate_right() { // Нажата кнопка поворота направо
+
+            }
+        },
+        watch: {
+            tab() {
+                this.undoHistory = [] // Очищает историю изменений при переходе на другую вкладку
+                this.undoHistoryPause = false
+                this.undoDid = false
+            },
+            'data.genetic': {
+                handler(val) {
+                    this.updateCharacter();
+                    this.historyPush()
+                },
+                deep: true
+            },
+            'data.face': {
+                handler(val) {
+                    this.updateCharacter();
+                    this.historyPush()
+                },
+                deep: true
+            }
+        }
+    });
+</script>
+</body>
+</html>

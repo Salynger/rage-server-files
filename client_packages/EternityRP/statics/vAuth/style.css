@@ -1,0 +1,95 @@
+html {
+    background-color: var(--orange);
+    background-image: url("background.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+@media (max-width: 1200px) {
+    html {
+        background-image: url("background2.png");
+    }
+}
+
+body {
+    text-align: center;
+}
+
+h1 {
+    margin: 0;
+    font-weight: normal;
+}
+
+.welcome {
+    color: var(--white);
+    text-transform: uppercase;
+}
+.name--all {
+    color: var(--white);
+    font-size: 1.6rem;
+}
+.name--first-letter {
+    color: var(--gray);
+    font-size: 2rem;
+}
+
+.t-opacity-enter-active, .t-opacity-leave-active {
+    transition: opacity .25s;
+}
+.t-opacity-enter, .t-opacity-leave-to {
+    opacity: 0;
+}
+
+.vertical-line {
+    background-color: var(--gray);
+    height: 4px;
+    width: 30px;
+}
+
+
+.btn {
+    width: 100%;
+}
+
+.btn-2 {
+    background-color: var(--orange);
+    color: var(--gray);
+}
+.btn-2:hover {
+    background-color: var(--gray);
+    color: var(--orange);
+}
+
+.btn-text {
+    color: var(--white);
+    text-decoration: underline;
+    transition: color .5s;
+    cursor: pointer;
+}
+.btn-text:hover {
+    color: var(--gray);
+}
+
+.tg {
+    position: relative;
+}
+.tg > * {
+    transition: all 1s;
+}
+.tg-enter, .tg-leave-to {
+    opacity: 0;
+}
+.tg-leave-active {
+    position: absolute;
+    width: 100%;
+}
+
+.banned {
+    text-align: left;
+}
+.banned p {
+    margin: 0;
+}
+.blocked {
+    text-align: center;
+}

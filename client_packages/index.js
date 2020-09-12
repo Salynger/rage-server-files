@@ -1,0 +1,1 @@
+require('EternityRP/index.js');

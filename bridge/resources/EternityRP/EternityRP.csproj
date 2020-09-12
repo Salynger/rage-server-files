@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>compiled\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="BCrypt-Core">
+      <HintPath>..\..\runtime\BCrypt-Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Bootstrapper">
+      <HintPath>..\..\runtime\Bootstrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\..\runtime\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql">
+      <HintPath>..\..\runtime\Npgsql.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Commands\" />
+  </ItemGroup>
+
+</Project>

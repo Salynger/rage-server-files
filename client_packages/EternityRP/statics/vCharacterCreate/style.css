@@ -1,0 +1,155 @@
+:root {
+    --width: 700px;
+    --rotation-btn-size: 60px;
+}
+
+.interface {
+    width: var(--width);
+    font-size: 1.2rem;
+}
+.tabs {
+    background-color: var(--dark);
+    text-align: center;
+    border-bottom: 2px solid var(--gray);
+}
+.tabs-item {
+    color: var(--white);
+    cursor: pointer;
+    transition: color .3s;
+}
+.tabs-item.active {
+    color: var(--orange);
+}
+.menus {
+    background-color: var(--gray-dark);
+}
+.menu {
+    overflow: hidden;
+}
+.menu-enter-active, .menu-leave-active {
+    transition: opacity .2s;
+}
+.menu-enter, .menu-leave-to {
+    opacity: 0;
+}
+.additional-menu {
+    background-color: var(--gray-dark);
+    border-right: 2px solid var(--gray);
+}
+.additional-menu .btn {
+    font-size: 1rem;
+    background-color: var(--dark);
+    color: var(--white);
+    width: 100%;
+}
+.additional-menu .btn:hover {
+    background-color: var(--dark);
+    color: var(--orange);
+}
+.rotation {
+    text-align: center;
+}
+.rotation-btn {
+    background-color: var(--dark);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 50%;
+    border: unset;
+    width: var(--rotation-btn-size);
+    height: var(--rotation-btn-size);
+    border-radius: var(--rotation-btn-size);
+    transition: background-color .3s;
+}
+.rotation-btn:hover {
+    background-color: var(--gray-dark);
+}
+.rotation-btn.left {
+    background-image: url("icons/turn-left.png");
+}
+.rotation-btn.right {
+    background-image: url("icons/turn-right.png");
+}
+.title {
+    text-align: center;
+    color: var(--orange);
+    font-size: 1.4rem;
+}
+
+.input {
+    font-size: 1.1rem;
+    height: 2.3em;
+    line-height: 1.4;
+    padding: .5em 1em .5em 2.5em;
+}
+.input--icon {
+    height: 2.5em;
+    width: 2.5em;
+}
+.input--icon-img {
+    max-height: 55%;
+    max-width: 55%;
+}
+.input--progress-line {
+    background-color: var(--orange);
+}
+.genetic {
+    font-family: "Akrobat";
+    color: white;
+    margin: 0;
+    text-align: center;
+}
+.genetic-photo {
+    position: relative;
+    text-align: center;
+}
+.genetic-img {
+    height: 75px;
+    width: auto;
+    max-width: 100%;
+}
+.genetic-name {
+    font-family: "Akrobat-Light";
+    color: white;
+    text-align: center;
+}
+
+.genetic-leave-active, .genetic-enter-active {
+    transition: transform .2s, opacity .2s;
+}
+.genetic-leave-to {
+    transform: translateX(-10%);
+    opacity: 0;
+}
+.genetic-leave-active {
+    /*position: absolute;*/
+}
+.genetic-enter {
+    transform: translateX(10%);
+    opacity: 0;
+}
+.anim--right .genetic-leave-to {
+    transform: translateX(10%);
+}
+.anim--right .genetic-enter {
+    transform: translateX(-10%);
+}
+.genetic--arrow {
+    cursor: pointer;
+    z-index: 1;
+}
+
+.buttons {
+    background-color: var(--dark);
+}
+.buttons .btn {
+    font-size: 1rem;
+    padding: .4rem 2rem;
+}
+.btn--exit {
+    background-color: var(--red);
+    color: var(--white);
+}
+.btn--exit:hover {
+     background-color: var(--white);
+     color: var(--red);
+ }

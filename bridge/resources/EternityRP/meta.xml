@@ -1,0 +1,17 @@
+﻿<meta>
+  <info name="Eternity Role Play" author="Rantin" type="script" />
+  <script src="compiled/netcoreapp3.0/EternityRP.dll"/>
+  <settings>
+   
+	<setting name="host" value="127.0.0.1"/>
+  
+	<setting name="username" value="rantin"/>
+  
+	<setting name="password" value="Ufyucnth352"/>
+   
+	<setting name="database" value="erp"/>
+ 
+   </settings>
+
+
+</meta>
